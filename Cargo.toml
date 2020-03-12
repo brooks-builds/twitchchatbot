@@ -7,6 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+twitchchat = "0.8.4"
 tokio = { version = "0.2.13", features = ["full", "macros"] }
-twitchchat = { version = "0.8.4", features = ["async"] }
 dotenv = "0.15.0"
