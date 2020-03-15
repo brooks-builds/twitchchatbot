@@ -10,3 +10,4 @@ edition = "2018"
 twitchchat = "0.8.4"
 tokio = { version = "0.2.13", features = ["full", "macros"] }
 dotenv = "0.15.0"
+diesel = { version = "1.4.3", features = ["postgres"] }

@@ -8,6 +8,7 @@ async fn main() {
     let nick = env::var("TWITCH_NICK").unwrap();
     let pass = env::var("TWITCH_PASS").unwrap();
     let channel = env::var("TWITCH_CHANNEL").unwrap();
+    let database_url = env::var("DATABASE_URL").unwrap();
 
-    twitchchatbot::run(nick, pass, channel).await;
+    twitchchatbot::run(nick, pass, channel, database_url).await;
 }

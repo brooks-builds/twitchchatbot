@@ -1,10 +1,17 @@
+use super::database::chatter::NewChatter;
+use diesel::PgConnection;
 use tokio::stream::StreamExt as _;
 use twitchchat::{
     events::{Join, Privmsg},
     Client, Secure,
 };
 
-pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel: String) {
+pub async fn chatbot(
+    twitch_nickname: String,
+    twitch_key: String,
+    twitch_channel: String,
+    database_connection: PgConnection,
+) {
     let (read, write) = twitchchat::connect_easy(&twitch_nickname, &twitch_key, Secure::UseTls)
         .await
         .unwrap();
@@ -22,7 +29,10 @@ pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel
     tokio::task::spawn(async move {
         let mut writer = bot_client.writer();
         while let Some(msg) = bot.next().await {
-            // message coming in, save that a message came in to the database
+            super::database::chatter::NewChatter::insert(
+                msg.name.to_string(),
+                &database_connection,
+            );
             // get the command from the message
             // check the database to see if we have the command
             // respond with the command response or an error
