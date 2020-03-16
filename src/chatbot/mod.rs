@@ -33,23 +33,13 @@ pub async fn chatbot(
                 msg.name.to_string(),
                 &database_connection,
             );
-            // get the command from the message
-            // check the database to see if we have the command
-            // respond with the command response or an error
-            match msg.data.split(" ").next() {
-                Some("!quit") => {
-                    // causes the client to shutdown
-                    bot_client.stop().await.unwrap();
+            if let Some(command) = extract_command(&msg.data) {
+                let response =
+                    super::database::command::get_response(command, &database_connection);
+                if let Err(_err) = writer.privmsg(&msg.channel, &response).await {
+                    // we ran into a write error, we should probably leave this task
+                    return;
                 }
-                Some("!hello") => {
-                    let response = format!("hello {}!", msg.name);
-                    // send a message in response
-                    if let Err(_err) = writer.privmsg(&msg.channel, &response).await {
-                        // we ran into a write error, we should probably leave this task
-                        return;
-                    }
-                }
-                _ => {}
             }
         }
     });
@@ -78,4 +68,12 @@ pub async fn chatbot(
             eprintln!("error: {}", err);
         }
     }
+}
+
+fn extract_command(message: &str) -> Option<&str> {
+    if message.starts_with('!') {
+        return message.split(' ').next();
+    }
+
+    None
 }

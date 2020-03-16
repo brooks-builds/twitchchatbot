@@ -1,4 +1,5 @@
 pub mod chatter;
+pub mod command;
 pub mod schema;
 
 use diesel::{Connection, PgConnection};
