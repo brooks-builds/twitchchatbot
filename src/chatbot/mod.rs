@@ -6,12 +6,8 @@ use twitchchat::{
     Client, Secure,
 };
 
-pub async fn chatbot(
-    twitch_nickname: String,
-    twitch_key: String,
-    twitch_channel: String,
-    database_connection: PgConnection,
-) {
+pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel: String) {
+    let database_connection = super::database::connect();
     let (read, write) = twitchchat::connect_easy(&twitch_nickname, &twitch_key, Secure::UseTls)
         .await
         .unwrap();
