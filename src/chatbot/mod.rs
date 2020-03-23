@@ -30,11 +30,11 @@ pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel
                 &database_connection,
             );
             if let Some(command) = extract_command(&msg.data) {
-                let response =
-                    super::database::command::get_response(command, &database_connection);
-                if let Err(_err) = writer.privmsg(&msg.channel, &response).await {
-                    // we ran into a write error, we should probably leave this task
-                    return;
+                if let Some(response) = super::database::command::get_response(command) {
+                    if let Err(_err) = writer.privmsg(&msg.channel, &response).await {
+                        // we ran into a write error, we should probably leave this task
+                        return;
+                    }
                 }
             }
         }

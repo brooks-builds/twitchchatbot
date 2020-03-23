@@ -18,14 +18,21 @@ pub struct NewCommand {
     pub response: String,
 }
 
-pub fn get_response(chat_command: &str, connection: &diesel::PgConnection) -> String {
+pub fn get_response(chat_command: &str) -> Option<String> {
     use super::schema::commands::dsl::*;
+    let connection = connect();
 
-    commands
+    let result = commands
         .select(response)
         .filter(command.eq(chat_command.to_string()))
-        .first::<String>(connection)
-        .expect("error getting response")
+        .load::<String>(&connection)
+        .expect("error getting response");
+
+    if !result.is_empty() {
+        Some(result[0].clone())
+    } else {
+        None
+    }
 }
 
 pub fn get_all() -> Vec<Command> {
