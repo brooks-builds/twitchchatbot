@@ -62,3 +62,14 @@ pub fn insert(new_command: NewCommand) -> Command {
         .get_result(&connection)
         .unwrap()
 }
+
+pub fn update(id_to_update: i32, new_command: String, new_response: String) -> Command {
+    use super::schema::commands::dsl::*;
+
+    let connection = connect();
+
+    diesel::update(commands.filter(id.eq(id_to_update)))
+        .set((command.eq(new_command), response.eq(new_response)))
+        .get_result(&connection)
+        .unwrap()
+}
