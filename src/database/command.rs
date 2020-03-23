@@ -22,17 +22,13 @@ pub fn get_response(chat_command: &str) -> Option<String> {
     use super::schema::commands::dsl::*;
     let connection = connect();
 
-    let result = commands
+    let mut result = commands
         .select(response)
         .filter(command.eq(chat_command.to_string()))
         .load::<String>(&connection)
         .expect("error getting response");
 
-    if !result.is_empty() {
-        Some(result[0].clone())
-    } else {
-        None
-    }
+    result.pop()
 }
 
 pub fn get_all() -> Vec<Command> {
