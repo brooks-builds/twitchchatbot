@@ -73,3 +73,14 @@ pub fn update(id_to_update: i32, new_command: String, new_response: String) -> C
         .get_result(&connection)
         .unwrap()
 }
+
+pub fn destroy(id_to_destroy: i32) -> Result<(), String> {
+    use super::schema::commands::dsl::*;
+
+    let connection = connect();
+
+    match diesel::delete(commands.filter(id.eq(id_to_destroy))).execute(&connection) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(String::from("Error deleting command")),
+    }
+}

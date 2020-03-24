@@ -45,7 +45,24 @@ pub async fn run() {
             }
         });
 
-    let routes = warp::get().and(get_all.or(get_one)).or(create).or(update);
+    let destroy = warp::delete()
+        .and(warp::path!("api" / "v1" / "commands" / i32))
+        .map(|id| match command::destroy(id) {
+            Ok(_) => warp::reply::with_status(
+                warp::reply::json(&serde_json::json!({"status": "success"})),
+                warp::http::StatusCode::OK,
+            ),
+            Err(message) => warp::reply::with_status(
+                warp::reply::json(&serde_json::json!({ "error": message })),
+                warp::http::StatusCode::INTERNAL_SERVER_ERROR,
+            ),
+        });
+
+    let routes = warp::get()
+        .and(get_all.or(get_one))
+        .or(create)
+        .or(update)
+        .or(destroy);
     warp::serve(routes).run(([127, 0, 0, 1], 5000)).await;
 }
 
