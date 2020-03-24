@@ -31,7 +31,21 @@ pub async fn run() {
                 warp::reply::with_status(warp::reply::json(&serde_json::json!({"error": "New commands must begin with ! and not have any spaces"})), warp::http::StatusCode::BAD_REQUEST)
             }
         });
-    let routes = warp::get().and(get_all.or(get_one).or(create)).or(create);
+
+    let update = warp::put()
+        .and(warp::path!("api" / "v1" / "commands" / i32))
+        .and(warp::body::content_length_limit(1024 * 64))
+        .and(warp::body::json())
+        .map(|id: i32, updated_command: command::NewCommand| {
+            if validate_new_command(&updated_command.command) {
+                let command = command::update(id, updated_command.command, updated_command.response);
+                warp::reply::with_status(warp::reply::json(&command), warp::http::StatusCode::OK)
+            } else {
+                warp::reply::with_status(warp::reply::json(&serde_json::json!({"error": "Commands must begin with ! and not have any spaces"})), warp::http::StatusCode::BAD_REQUEST)
+            }
+        });
+
+    let routes = warp::get().and(get_all.or(get_one)).or(create).or(update);
     warp::serve(routes).run(([127, 0, 0, 1], 5000)).await;
 }
 
