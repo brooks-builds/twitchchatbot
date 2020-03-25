@@ -3,7 +3,7 @@ use super::schema::commands;
 use diesel::prelude::*;
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(Queryable, Deserialize, Serialize)]
+#[derive(Queryable, Deserialize, Serialize, AsChangeset, Identifiable)]
 pub struct Command {
     id: i32,
     command: String,
@@ -29,6 +29,25 @@ pub fn get_response(chat_command: &str) -> Option<String> {
         .expect("error getting response");
 
     result.pop()
+}
+
+pub fn get_response_by_command(chat_command: &str) -> Result<String, &'static str> {
+    use super::schema::commands::dsl::*;
+    let connection = connect();
+
+    match commands
+        .filter(command.eq(chat_command.to_string()))
+        .first::<Command>(&connection)
+    {
+        Ok(mut chat_command) => {
+            chat_command.used += 1;
+            match chat_command.save_changes::<Command>(&connection) {
+                Err(_) => Err("Error incrementing used command"),
+                Ok(_) => Ok(chat_command.response),
+            }
+        }
+        Err(_) => Err("Chat command doesn't exist"),
+    }
 }
 
 pub fn get_all() -> Vec<Command> {
