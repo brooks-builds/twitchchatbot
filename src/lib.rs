@@ -11,9 +11,10 @@ pub async fn run(
     twitch_key: String,
     twitch_channel: String,
     database_url: String,
+    api_key: String,
 ) {
     let api_join_handle = tokio::task::spawn(async {
-        api::run().await;
+        api::run(api_key).await;
     });
     let chatbot_join_handle = tokio::task::spawn(async {
         chatbot(twitch_nickname, twitch_key, twitch_channel).await;

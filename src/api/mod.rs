@@ -1,7 +1,12 @@
 use super::database::command;
 use warp::Filter;
 
-pub async fn run() {
+pub async fn run(_api_key: String) {
+    // TODO - research how to check headers for all routes
+    // let authorize = warp::any().map(|| {
+    //     let auth_header = warp::header::optional::<String>("api_key");
+    //     dbg!(auth_header);
+    // });
     let json_reply = warp::reply::with::header("Content-Type", "application/json");
     let get_all = warp::path!("api" / "v1" / "commands")
         .map(|| {
@@ -59,6 +64,7 @@ pub async fn run() {
         });
 
     let routes = warp::get()
+        // .and(authorize)
         .and(get_all.or(get_one))
         .or(create)
         .or(update)
