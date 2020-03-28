@@ -17,7 +17,7 @@ paths:
           content:
             application/json:
               schema:
-                - $ref: '#/components/schemas/Command'
+                $ref: '#/components/schemas/ArrayOfCommands'
         default:
           description: Unexpected error
           content:
@@ -39,6 +39,10 @@ components:
         used:
           type: integer
           format: int32
+    ArrayOfCommands:
+        type: array
+        items:
+            $ref: '#/components/schemas/Command'
     Error:
       type: object
       properties:
