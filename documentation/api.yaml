@@ -42,7 +42,7 @@ components:
     AllCommands:
         type: array
         items:
-            $ref: '#/components/schemas/Command'
+          $ref: '#/components/schemas/Command'
     Error:
       type: object
       properties:
