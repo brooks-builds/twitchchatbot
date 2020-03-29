@@ -82,7 +82,7 @@ pub async fn run(api_key: String) {
         .or(create)
         .or(update)
         .or(destroy);
-    warp::serve(routes).run(([127, 0, 0, 1], 5000)).await;
+    warp::serve(routes).run(([0, 0, 0, 0], 5000)).await;
 }
 
 fn validate_new_command(command: &str) -> bool {
