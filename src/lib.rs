@@ -10,7 +10,6 @@ pub async fn run(
     twitch_nickname: String,
     twitch_key: String,
     twitch_channel: String,
-    database_url: String,
     api_key: String,
 ) {
     let api_join_handle = tokio::task::spawn(async {

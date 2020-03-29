@@ -18,19 +18,6 @@ pub struct NewCommand {
     pub response: String,
 }
 
-pub fn get_response(chat_command: &str) -> Option<String> {
-    use super::schema::commands::dsl::*;
-    let connection = connect();
-
-    let mut result = commands
-        .select(response)
-        .filter(command.eq(chat_command.to_string()))
-        .load::<String>(&connection)
-        .expect("error getting response");
-
-    result.pop()
-}
-
 pub fn get_response_by_command(chat_command: &str) -> Result<String, &'static str> {
     use super::schema::commands::dsl::*;
     let connection = connect();
@@ -53,7 +40,6 @@ pub fn get_response_by_command(chat_command: &str) -> Result<String, &'static st
 pub fn get_all() -> Vec<Command> {
     use super::schema::commands::dsl::*;
 
-    let database_url = std::env::var("DATABASE_URL").unwrap();
     let connection = connect();
 
     commands
@@ -64,7 +50,6 @@ pub fn get_all() -> Vec<Command> {
 pub fn get_one(command_id: i32) -> Command {
     use super::schema::commands::dsl::*;
 
-    let database_url = std::env::var("DATABASE_URL").unwrap();
     let connection = connect();
 
     commands

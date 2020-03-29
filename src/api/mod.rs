@@ -21,8 +21,8 @@ pub async fn run(api_key: String) {
         .and(warp::header::<String>("api_key"))
         .and(warp::body::content_length_limit(1024 * 64))
         .and(warp::body::json())
-        .map(move |header_api_key, new_command: command::NewCommand| {
-            if &create_api_key == &header_api_key {
+        .map(move |header_api_key: String, new_command: command::NewCommand| {
+            if create_api_key == header_api_key {
                 if validate_new_command(&new_command.command) {                
                     let created_command = command::insert(new_command);
                     warp::reply::with_status(
@@ -42,8 +42,8 @@ pub async fn run(api_key: String) {
         .and(warp::body::content_length_limit(1024 * 64))
         .and(warp::body::json())
         .and(warp::header::<String>("api_key"))
-        .map(move |id: i32, updated_command: command::NewCommand, header_api_key| {
-            if &header_api_key == &update_api_key {
+        .map(move |id: i32, updated_command: command::NewCommand, header_api_key: String| {
+            if header_api_key == update_api_key {
 
                 if validate_new_command(&updated_command.command) {
                     let command = command::update(id, updated_command.command, updated_command.response);
@@ -59,8 +59,8 @@ pub async fn run(api_key: String) {
     let destroy = warp::delete()
         .and(warp::path!("api" / "v1" / "commands" / i32))
         .and(warp::header::<String>("api_key"))
-        .map(move |id, header_api_key| {
-            if &destroy_api_key == &header_api_key {
+        .map(move |id, header_api_key: String| {
+            if destroy_api_key == header_api_key {
                 match command::destroy(id) {
                     Ok(_) => warp::reply::with_status(
                         warp::reply::json(&serde_json::json!({"status": "success"})),

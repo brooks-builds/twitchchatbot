@@ -3,6 +3,7 @@ use diesel::prelude::*;
 use diesel::PgConnection;
 
 #[derive(Queryable)]
+#[allow(dead_code)]
 pub struct Chatter {
     id: i32,
     username: String,

@@ -1,10 +1,5 @@
-use super::database::chatter::NewChatter;
-use diesel::PgConnection;
 use tokio::stream::StreamExt as _;
-use twitchchat::{
-    events::{Join, Privmsg},
-    Client, Secure,
-};
+use twitchchat::{Client, Secure};
 
 pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel: String) {
     let database_connection = super::database::connect();
@@ -43,17 +38,11 @@ pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel
     });
 
     if let Err(err) = client.writer().join(&twitch_channel).await {
-        match err {
-            twitchchat::client::Error::InvalidChannel(..) => {
-                eprintln!("you cannot join a channel with an empty name. demo is ending");
-                std::process::exit(1);
-            }
-            _ => {
-                // we'll get an error if we try to write to a disconnected client.
-                // if this happens, you should shutdown your tasks
-            }
-        }
-    }
+        if let twitchchat::client::Error::InvalidChannel(..) = err {
+            eprintln!("you cannot join a channel with an empty name. demo is ending");
+            std::process::exit(1);
+        };
+    };
 
     match done.await {
         Ok(twitchchat::client::Status::Eof) => {
