@@ -6,5 +6,5 @@
 * [x] Add update to API
 * [x] Add ability to delete command to API
 * [x] Increment usage when a command is used
-* [] Add security so that only I can use the API
+* [x] Add security so that only I can use the API
 * [] Deploy to Digital Ocean
