@@ -29,9 +29,12 @@ pub async fn chatbot(twitch_nickname: String, twitch_key: String, twitch_channel
                     Ok(response) => response,
                     Err(message) => message.to_string(),
                 };
-                if let Err(_err) = writer.privmsg(&msg.channel, &response).await {
-                    // we ran into a write error, we should probably leave this task
-                    return;
+
+                if response != "IGNORE" {
+                    if let Err(_err) = writer.privmsg(&msg.channel, &response).await {
+                        // we ran into a write error, we should probably leave this task
+                        return;
+                    }
                 }
             }
         }
