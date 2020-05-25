@@ -3,7 +3,7 @@ use warp::Filter;
 
 pub async fn run(api_key: String) {
     let json_reply = warp::reply::with::header("Content-Type", "application/json");
-    let cors = warp::reply::with::header("Access-Control-Allow-Origin", "http://localhost:8080");
+    let cors = warp::reply::with::header("Access-Control-Allow-Origin", "*");
     let get_all = warp::path!("api" / "v1" / "commands")
         .map(|| {
             let commands = command::get_all();
