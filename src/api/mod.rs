@@ -3,6 +3,7 @@ use warp::Filter;
 
 pub async fn run(api_key: String) {
     let json_reply = warp::reply::with::header("Content-Type", "application/json");
+    let cors = warp::reply::with::header("Access-Control-Allow-Origin", "http://localhost:8080");
     let get_all = warp::path!("api" / "v1" / "commands")
         .map(|| {
             let commands = command::get_all();
@@ -10,11 +11,13 @@ pub async fn run(api_key: String) {
 
             warp::reply::json(&commands)
         })
-        .with(json_reply.clone());
+        .with(json_reply.clone())
+        .with(cors.clone());
 
     let get_one = warp::path!("api" / "v1" / "commands" / i32)
         .map(|id| warp::reply::json(&command::get_one(id)))
-        .with(json_reply);
+        .with(json_reply)
+        .with(cors.clone());
     let create_api_key = api_key.clone();
     let create = warp::post()
         .and(warp::path!("api" / "v1" / "commands"))
@@ -35,7 +38,8 @@ pub async fn run(api_key: String) {
             } else {
                 warp::reply::with_status(warp::reply::json(&serde_json::json!({"error": "API key missing or incorrect"})), warp::http::StatusCode::UNAUTHORIZED)
             }
-            });
+            })
+            .with(cors.clone());
     let update_api_key = api_key.clone();
     let update = warp::put()
         .and(warp::path!("api" / "v1" / "commands" / i32))
@@ -54,7 +58,7 @@ pub async fn run(api_key: String) {
             } else {
                 warp::reply::with_status(warp::reply::json(&serde_json::json!({"error": "API key missing or incorrect"})), warp::http::StatusCode::UNAUTHORIZED)
             }
-        });
+        }).with(cors.clone());
     let destroy_api_key = api_key.clone();
     let destroy = warp::delete()
         .and(warp::path!("api" / "v1" / "commands" / i32))
@@ -74,7 +78,7 @@ pub async fn run(api_key: String) {
             } else {
                 warp::reply::with_status(warp::reply::json(&serde_json::json!({"error": "API key missing or incorrect"})), warp::http::StatusCode::UNAUTHORIZED)
             }
-        });
+        }).with(cors.clone());
 
     let routes = warp::get()
         // .and(authorize)
